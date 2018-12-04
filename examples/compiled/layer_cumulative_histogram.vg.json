@@ -24,6 +24,7 @@
           "maxbins": 10,
           "extent": {"signal": "bin_maxbins_10_IMDB_Rating_extent"}
         },
+        {"type": "filter", "expr": "datum.bin_IMDB_Rating !== null"},
         {
           "type": "aggregate",
           "groupby": ["bin_IMDB_Rating", "bin_IMDB_Rating_end"],
@@ -31,7 +32,6 @@
           "fields": ["*"],
           "as": ["count"]
         },
-        {"type": "filter", "expr": "datum.bin_IMDB_Rating !== null"},
         {
           "type": "window",
           "params": [null],
