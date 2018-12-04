@@ -68,6 +68,8 @@ function optimizationDataflowHelper(dataComponent: DataComponent) {
 
   mutatedFlag = runOptimizer(optimizers.MoveParseUp, getLeaves(roots), mutatedFlag);
 
+  mutatedFlag = runOptimizer(optimizers.MoveFilterUp, getLeaves(roots), mutatedFlag);
+
   mutatedFlag = runOptimizer(optimizers.RemoveDuplicateTimeUnits, getLeaves(roots), mutatedFlag);
 
   mutatedFlag = runOptimizer(optimizers.MergeParse, getLeaves(roots), mutatedFlag);

@@ -3,6 +3,7 @@ import {Dict, fieldIntersection, flatten, hash, keys} from '../../util';
 import {AggregateNode} from './aggregate';
 import {DataFlowNode, OutputNode} from './dataflow';
 import {FacetNode} from './facet';
+import {FilterNode} from './filter';
 import {ParseNode} from './formatparse';
 import {FACET_SCALE_PREFIX} from './optimize';
 import {BottomUpOptimizer, TopDownOptimizer} from './optimizer';
@@ -73,6 +74,23 @@ export class MoveParseUp extends BottomUpOptimizer {
           this.setContinue();
           return this.flags;
         }
+        this.setMutated();
+        node.swapWithParent();
+      }
+    }
+    this.setContinue();
+    return this.flags;
+  }
+}
+
+export class MoveFilterUp extends BottomUpOptimizer {
+  public run(node: DataFlowNode): OptimizerFlags {
+    const parent = node.parent;
+    if (parent instanceof SourceNode) {
+      return this.flags;
+    }
+    if (node instanceof FilterNode && parent instanceof AggregateNode && parent.numChildren() === 1) {
+      if (!fieldIntersection(parent.producedFields(), node.dependentFields())) {
         this.setMutated();
         node.swapWithParent();
       }
