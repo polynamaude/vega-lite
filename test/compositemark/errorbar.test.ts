@@ -1,11 +1,12 @@
 /* tslint:disable:quotemark */
 import {AggregateOp} from 'vega';
 import {ErrorBarCenter, ErrorBarExtent} from '../../src/compositemark/errorbar';
+import {CompositeUnitSpec} from '../../src/compositemark/index';
 import {defaultConfig} from '../../src/config';
 import {isFieldDef} from '../../src/fielddef';
 import * as log from '../../src/log';
 import {isMarkDef} from '../../src/mark';
-import {CompositeUnitSpec, ExtendedLayerSpec, GenericSpec, isLayerSpec, isUnitSpec, normalize} from '../../src/spec';
+import {ExtendedLayerSpec, GenericSpec, isLayerSpec, isUnitSpec, normalize} from '../../src/spec';
 import {isAggregate, isCalculate, Transform} from '../../src/transform';
 import {some} from '../../src/util';
 
@@ -897,29 +898,6 @@ describe('normalizeErrorBar with aggregated upper and lower bound input', () => 
       );
 
       expect(localLogger.warns[0]).toEqual(log.message.errorBarContinuousAxisHasCustomizedAggregate(aggregate, mark));
-    })
-  );
-
-  it(
-    'should produce a warning if there is an unsupported channel in encoding',
-    log.wrap(localLogger => {
-      const size = 'size';
-
-      normalize(
-        {
-          data,
-          mark,
-          encoding: {
-            x: {field: 'age', type: 'ordinal'},
-            y: {field: 'people', type: 'quantitative'},
-            y2: {field: 'people2', type: 'quantitative', aggregate: 'min'},
-            size: {value: 10}
-          }
-        },
-        defaultConfig
-      );
-
-      expect(localLogger.warns[0]).toEqual(log.message.incompatibleChannel(size, mark));
     })
   );
 

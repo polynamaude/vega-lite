@@ -1,9 +1,11 @@
-import {Encoding, EncodingWithFacet} from '../encoding';
-import {RepeatRef} from '../fielddef';
-import {AnyMark, Mark, MarkDef} from '../mark';
+import {CompositeUnitSpec} from '../compositemark/index';
+import {Encoding} from '../encoding';
+import {Field} from '../fielddef';
+import {Mark, MarkDef} from '../mark';
 import {Projection} from '../projection';
 import {SelectionDef} from '../selection';
 import {BaseSpec, LayoutSizeMixins} from './base';
+import {FacetMapping} from './facet';
 
 export {normalizeTopLevelSpec as normalize} from '../normalize';
 export {BaseSpec, DataMixins, LayoutSizeMixins} from './base';
@@ -39,18 +41,29 @@ export interface GenericUnitSpec<E extends Encoding<any>, M> extends BaseSpec, L
 /**
  * A unit specification without any shortcut/expansion syntax.
  */
-export type NormalizedUnitSpec = GenericUnitSpec<Encoding<string | RepeatRef>, Mark | MarkDef>;
+export type NormalizedUnitSpec<
+  /** Extra Encoding */
+  EE = {}
+> = GenericUnitSpec<Encoding<Field> & EE, Mark | MarkDef>;
+
+/* tslint:disable */
+// Need to declare empty object so the generated schema has a reasonable name for ExtendedUnitSpec
+export interface EmptyObject {}
+/* tslint:enable */
 
 /**
- * Unit spec that can have a composite mark.
+ * Unit spec that can be normalized/expanded into a layer spec or another unit spec.
  */
-export type CompositeUnitSpec = GenericUnitSpec<Encoding<string | RepeatRef>, AnyMark>;
+export type ExtendedUnitSpec<
+  /** Extra Encoding */
+  EE = EmptyObject
+> = NormalizedUnitSpec<EE> | CompositeUnitSpec<EE>;
 
 /**
- * Unit spec that can have a composite mark and row or column channels.
+ * Unit spec that can have a composite mark and row or column channels (shorthand for a facet spec).
  */
-export type FacetedCompositeUnitSpec = GenericUnitSpec<EncodingWithFacet<string | RepeatRef>, AnyMark>;
+export type FacetedExtendedUnitSpec = ExtendedUnitSpec<FacetMapping<Field>>;
 
-export function isUnitSpec(spec: BaseSpec): spec is FacetedCompositeUnitSpec | NormalizedUnitSpec {
+export function isUnitSpec(spec: BaseSpec): spec is FacetedExtendedUnitSpec | NormalizedUnitSpec {
   return !!spec['mark'];
 }
