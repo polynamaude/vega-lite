@@ -19,7 +19,7 @@ import {TopLevelProperties} from './spec/toplevel';
 import {StackOffset} from './stack';
 import {extractTitleConfig, TitleConfig} from './title';
 import {duplicate, keys, mergeDeep} from './util';
-import {StrokeJoin, VgMarkConfig, VgScheme} from './vega.schema';
+import {BaseMarkConfig, SchemeConfig, StrokeJoin} from './vega.schema';
 
 export interface ViewConfig {
   /**
@@ -122,7 +122,7 @@ export const defaultViewConfig: ViewConfig = {
   height: 200
 };
 
-export type RangeConfigValue = (number | string)[] | VgScheme | {step: number};
+export type RangeConfigValue = (number | string)[] | SchemeConfig | {step: number};
 
 export type RangeConfig = RangeConfigProps & {[name: string]: RangeConfigValue};
 
@@ -130,27 +130,27 @@ export interface RangeConfigProps {
   /**
    * Default range for _nominal_ (categorical) fields.
    */
-  category?: string[] | VgScheme;
+  category?: string[] | SchemeConfig;
 
   /**
    * Default range for diverging _quantitative_ fields.
    */
-  diverging?: string[] | VgScheme;
+  diverging?: string[] | SchemeConfig;
 
   /**
    * Default range for _quantitative_ heatmaps.
    */
-  heatmap?: string[] | VgScheme;
+  heatmap?: string[] | SchemeConfig;
 
   /**
    * Default range for _ordinal_ fields.
    */
-  ordinal?: string[] | VgScheme;
+  ordinal?: string[] | SchemeConfig;
 
   /**
    * Default range for _quantitative_ and _temporal_ fields.
    */
-  ramp?: string[] | VgScheme;
+  ramp?: string[] | SchemeConfig;
 
   /**
    * Default range palette for the `shape` channel.
@@ -158,7 +158,7 @@ export interface RangeConfigProps {
   symbol?: string[];
 }
 
-export function isVgScheme(rangeConfig: string[] | VgScheme): rangeConfig is VgScheme {
+export function isVgScheme(rangeConfig: string[] | SchemeConfig): rangeConfig is SchemeConfig {
   return rangeConfig && !!rangeConfig['scheme'];
 }
 
@@ -216,7 +216,7 @@ export interface VLOnlyConfig {
 }
 
 export interface StyleConfigIndex {
-  [style: string]: VgMarkConfig;
+  [style: string]: BaseMarkConfig;
 }
 
 export interface Config
@@ -419,7 +419,7 @@ function redirectConfig(
   toProp?: string,
   compositeMarkPart?: string
 ) {
-  const propConfig: VgMarkConfig =
+  const propConfig: BaseMarkConfig =
     prop === 'title'
       ? extractTitleConfig(config.title).mark
       : compositeMarkPart
@@ -430,7 +430,7 @@ function redirectConfig(
     toProp = 'cell'; // View's default style is "cell"
   }
 
-  const style: VgMarkConfig = {
+  const style: BaseMarkConfig = {
     ...propConfig,
     ...config.style[prop]
   };
